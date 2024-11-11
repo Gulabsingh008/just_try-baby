@@ -1,4 +1,5 @@
 from pyrogram import Client, __version__, filters
+import uvloop
 from pyrogram.raw.all import layer
 from database.ia_filterdb import Media
 from database.users_chats_db import db
@@ -13,6 +14,7 @@ import pytz
 from aiohttp import web
 from plugins import web_server, check_expired_premium
 import time
+uvloop.install()
 
 class Bot(Client):
     def __init__(self):
