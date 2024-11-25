@@ -28,7 +28,7 @@ def upload_image_requests(image_path):
 #Distribute and edit it as your wish but please don't remove credit 😓😓
 #By stealing Credit of Developer you will not become pro so try to give full credit to Developer 🥺🥺🥺
 
-@Client.on_message(filters.command("upload") & filters.private)
+@Client.on_message(filters.command("telegraph") & filters.private)
 async def upload_command(client, message):
     replied = message.reply_to_message
     if not replied:
