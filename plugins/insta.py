@@ -1,7 +1,7 @@
-from pyrogram import filters, Client
-import bs4, requests, re, asyncio
-import os, traceback, random
-from info import LOG_CHANNEL as DUMP_GROUP
+from pyrogram import filters, Client as Mbot
+import bs4, requests,re,asyncio
+import os,traceback,random
+from bot import LOG_GROUP,DUMP_GROUP
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
     "Accept": "*/*",
@@ -14,18 +14,18 @@ headers = {
     "Connection": "keep-alive",
     "Referer": "https://saveig.app/en",
 }
-@Client.on_message(filters.regex(r'https?://.*instagram[^\s]+') & filters.private)
+@Mbot.on_message(filters.regex(r'https?://.*instagram[^\s]+') & filters.incoming)
 async def link_handler(Mbot, message):
     link = message.matches[0].group(0)
     global headers
     try:
-        m = await message.reply_sticker("CAACAgUAAxkBAAKC7WcMwWmuaygDD-yW-FDBXBXdwEnIAAJ0DgACNtpoVLRXA392COiENgQ")
+        m = await message.reply_sticker("CAACAgIAAxkBATWhF2Qz1Y-FKIKqlw88oYgN8N82FtC8AAJnAAPb234AAT3fFO9hR5GfHgQ")
         url= link.replace("instagram.com","ddinstagram.com")
         url=url.replace("==","%3D%3D")
         if url.endswith("="):
-           dump_file=await message.reply_video(url[:-1],caption="𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑 𝐵𝑦 👉 [@AF_Mhakal]")
+           dump_file=await message.reply_video(url[:-1],caption="Thank you for using - @InstaReelsdownbot")
         else:
-            dump_file=await message.reply_video(url,caption="𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑 𝐵𝑦 👉 [@AF_Mhakal]")
+            dump_file=await message.reply_video(url,caption="Thank you for using - @InstaReelsdownbot")
         if 'dump_file' in locals():
            await dump_file.forward(DUMP_GROUP)
         await m.delete()
@@ -54,15 +54,15 @@ async def link_handler(Mbot, message):
                       return await message.reply("oops something went wrong")
                try:
                    if ddinsta:
-                      dump_file=await message.reply_video(content_value,caption="𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑 𝐵𝑦 👉 User ID: <code>{user_id}{user.mention}")
+                      dump_file=await message.reply_video(content_value,caption="Thank you for using - @InstaReelsdownbot")
                    else:
-                       dump_file=await message.reply_video(content_value, caption="𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑 𝐵𝑦 👉 @venox")
+                       dump_file=await message.reply_video(content_value, caption="Thank you for using - @InstaReelsdownbot")
                except:
                    downfile=f"{os.getcwd()}/{random.randint(1,10000000)}"
                    with open(downfile,'wb') as x:
                        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
                        x.write(requests.get(content_value,headers=headers).content)
-                   dump_file=await message.reply_video(downfile,caption="{file_name}") 
+                   dump_file=await message.reply_video(downfile,caption="Thank you for using - @InstaReelsdownbot") 
             elif "/p/" in url:
                   meta_tag = requests.post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "en"}, headers=headers)
                   if meta_tag.ok:
@@ -75,7 +75,7 @@ async def link_handler(Mbot, message):
                      com=await message.reply_text(meta[i])
                      await asyncio.sleep(1)
                      try:
-                        dump_file=await message.reply_video(com.text,caption="𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑 𝐵𝑦 👉 @AF_Mhakal")
+                        dump_file=await message.reply_video(com.text,caption="Thank you for using - @InstaReelsdownbot")
                         await com.delete()
                      except:
                          pass 
@@ -87,12 +87,12 @@ async def link_handler(Mbot, message):
                   else:
                       return await message.reply("Oops something went wrong")
                   try:
-                     dump_file=await message.reply_video(meta[0], caption="𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑 𝐵𝑦 👉 User ID: <code>{user_id}")
+                     dump_file=await message.reply_video(meta[0], caption="Thank you for using - @InstaReelsdownbot")
                   except:
                       com=await message.reply(meta[0])
                       await asyncio.sleep(1)
                       try:
-                          dump_file=await message.reply_video(com.text,caption="𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑 𝐵𝑦 👉 {user.mention}")
+                          dump_file=await message.reply_video(com.text,caption="Thank you for using - @InstaReelsdownbot")
                           await com.delete()
                       except:
                           pass
@@ -106,7 +106,7 @@ async def link_handler(Mbot, message):
                await Mbot.send_message(LOG_GROUP, traceback.format_exc())
           #     await message.reply(tracemsg)
             ##optinal 
-            await message.reply(f"400: Sorry, Unable To Find It  try another or report it  to @AF_Mhakal")
+            await message.reply(f"400: Sorry, Unable To Find It  try another or report it  to @masterolic or support chat @spotify_supportbot 🤖  ")
 
         finally:
             if 'dump_file' in locals():
@@ -115,5 +115,4 @@ async def link_handler(Mbot, message):
             await m.delete()
             if 'downfile' in locals():
                 os.remove(downfile)
-            await message.reply("<a href='https://t.me/AF_Mhakal'>AF Mhakal</a>")
-
+            await message.reply("Check out @spotify_downloa_bot(music)  @spotifynewss(Channel) \n Please Support Us By /donate To Maintain This Project")
