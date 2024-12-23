@@ -40,6 +40,37 @@ def detect_language(text):
     except Exception as e:
         return "hi"
 
+@Client.on_callback_query(filters.regex("mostsearch"))
+async def most(client, callback_query):
+    def is_alphanumeric(string):
+        return bool(re.match('^[a-zA-Z0-9 ]*$', string))
+    limit = 20  
+    top_messages = await mdb.get_top_messages(limit)
+    seen_messages = set()
+    truncated_messages = []
+    for msg in top_messages:
+        msg_lower = msg.lower()
+        if msg_lower not in seen_messages and is_alphanumeric(msg):
+            seen_messages.add(msg_lower)
+            
+            if len(msg) > 35:
+                truncated_messages.append(msg[:32] + "...")
+            else:
+                truncated_messages.append(msg)
+
+   
+    keyboard = [truncated_messages[i:i+2] for i in range(0, len(truncated_messages), 2)]
+    
+    reply_markup = ReplyKeyboardMarkup(
+        keyboard, 
+        one_time_keyboard=True, 
+        resize_keyboard=True, 
+        placeholder="Most searches of the day"
+    )
+    
+    await callback_query.message.reply_text("<b>Hᴇʀᴇ ɪꜱ ᴛʜᴇ ᴍᴏꜱᴛ ꜱᴇᴀʀᴄʜᴇꜱ ʟɪꜱᴛ 👇</b>", reply_markup=reply_markup)
+    await callback_query.answer()
+
 @Client.on_message(filters.command("tts") & filters.private)
 async def tts(client, message):
     try:
@@ -149,7 +180,7 @@ async def start(client:Client, message):
                             InlineKeyboardButton('🎁 ɢᴇᴛ ᴘʀᴇᴍɪᴜᴍ ғʀᴇᴇ 🎁', callback_data=f'free_premium#{message.from_user.id}')
                             ],
                             [
-                            InlineKeyboardButton('🎭 ʏᴏᴜʀ ᴘᴏɪɴᴛs ✨', callback_data=f'point#{message.from_user.id}'),
+                            InlineKeyboardButton('🎭 ʏᴏᴜʀ ᴘᴏɪɴᴛs ✨', callback_data='mostsearch'),
                             InlineKeyboardButton('🫠 ᴀʙᴏᴜᴛ 🚩', callback_data='about')
                             ],
                             [
@@ -179,7 +210,7 @@ async def start(client:Client, message):
             InlineKeyboardButton('🎁 ɢᴇᴛ ᴘʀᴇᴍɪᴜᴍ ғʀᴇᴇ 🎁', callback_data=f'free_premium#{message.from_user.id}')
         ],
         [
-            InlineKeyboardButton('🎭 ʏᴏᴜʀ ᴘᴏɪɴᴛs ✨', callback_data=f'point#{message.from_user.id}'),
+            InlineKeyboardButton('🎭 ʏᴏᴜʀ ᴘᴏɪɴᴛs ✨', callback_data='mostsearch'),
             InlineKeyboardButton('🫠 ᴀʙᴏᴜᴛ 🚩', callback_data='about')
         ],
         [
@@ -234,7 +265,7 @@ async def start(client:Client, message):
             InlineKeyboardButton('🎁 ɢᴇᴛ ᴘʀᴇᴍɪᴜᴍ ғʀᴇᴇ 🎁', callback_data=f'free_premium#{message.from_user.id}')
         ],
         [
-            InlineKeyboardButton('🎭 ʏᴏᴜʀ ᴘᴏɪɴᴛs ✨', callback_data=f'point#{message.from_user.id}'),
+            InlineKeyboardButton('🎭 ʏᴏᴜʀ ᴘᴏɪɴᴛs ✨', callback_data='mostsearch'),
             InlineKeyboardButton('🫠 ᴀʙᴏᴜᴛ 🚩', callback_data='about')
         ],
         [
