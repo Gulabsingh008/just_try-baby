@@ -2,7 +2,7 @@ pyrofork==2.3.45
 tgcrypto
 pymongo==4.8.0
 motor==3.5.1
-marshmallow==3.18.1
+marshmallow==3.18.0
 umongo==3.0.1
 git+https://github.com/Joelkb/cinemagoer
 Heroku3
