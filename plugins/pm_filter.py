@@ -58,7 +58,7 @@ async def group_search(client, message):
                 if total != 0:
                     link = await db.get_set_grp_links(index=1)
                     msg = await message.reply_text(script.SUPPORT_GRP_MOVIE_TEXT.format(message.from_user.mention() , total) ,             reply_markup=InlineKeyboardMarkup([
-                        [ InlineKeyboardButton('ɢᴇᴛ ғɪʟᴇs ғʀᴏᴍ ʜᴇʀᴇ 😉' , url='https://t.me/+swpuQspBoVxiNjdl')]
+                        [ InlineKeyboardButton('ɢᴇᴛ ғɪʟᴇs ғʀᴏᴍ ʜᴇʀᴇ 😉' , url='https://t.me/+Cuh0VD290xBmODY1')]
                         ]))
                     await asyncio.sleep(300)
                     return await msg.delete()
