@@ -22,7 +22,7 @@ FILES_ID = {}
 CAP = {}
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
-async def pm_text(client, message):
+async def pm_search(client, message):
     if str(message.text).startswith('/'):
         return 
     link , ispm = await db.get_set_grp_links(index=0)
