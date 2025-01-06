@@ -46,7 +46,7 @@ CAP = {}
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
         user_id = message.from_user.id
-    if str(message.text).startswith('/'):
+    if str(message.text).startswith('/') or content.startswith("#"):
         return  # Ignore commands
     try:
         has_premium_access = await db.has_premium_access(user_id)
