@@ -64,7 +64,7 @@ CAP = {}
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
     user_id = message.from_user.id
-	user = message.from_user.username
+    user = message.from_user.username
     if str(message.text).startswith('/') or message.text.startswith("#"):
         return  # Ignore commands
 
@@ -88,7 +88,6 @@ async def pm_search(client, message):
     except Exception as e:
         await client.send_message(LOG_CHANNEL, f"Error in pm_search: {str(e)}")
 
-	    
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def group_search(client, message):
     user_id = message.from_user.id if message.from_user else None
