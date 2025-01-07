@@ -84,9 +84,9 @@ async def pm_search(client, message):
                 [InlineKeyboardButton('📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨', url='https://t.me/+JdRUqgm9Xvk3MWJl')]
             ])
         )
-    await client.send_message(
-        chat_id=LOG_CHANNEL,
-        text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
+        await client.send_message(
+            chat_id=LOG_CHANNEL,
+            text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
         )
 
     except Exception as e:
