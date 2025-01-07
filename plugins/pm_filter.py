@@ -21,28 +21,28 @@ BUTTONS = {}
 FILES_ID = {}
 CAP = {}
 
-# @Client.on_message(filters.private & filters.text & filters.incoming)
-# async def pm_search(client, message):
-#     if str(message.text).startswith('/'):
-#         return 
-#     link , ispm = await db.get_set_grp_links(index=0)
-#     if ispm:
-#         if 'hindi' in message.text.lower() or 'tamil' in message.text.lower() or 'telugu' in message.text.lower() or 'malayalam' in message.text.lower() or 'kannada' in message.text.lower() or 'english' in message.text.lower() or 'gujarati' in message.text.lower(): 
-#             return await auto_filter(client, message , pm_mode=True)
-#         await auto_filter(client, message , pm_mode=True)
-#     else:
-#         await message.reply_text(
-#         text=f"<b>Nᴀᴍᴀsᴛʜᴇ {message.from_user.mention} Jɪ 😍 ,\n\nɪ ᴀᴍ ɴᴏᴛ ᴡᴏʀᴋɪɴɢ ʜᴇʀᴇ. ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇꜱ ɪɴ ᴏᴜʀ ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ.</b>",
-#         reply_markup=InlineKeyboardMarkup(
-#             [
-#                 [
-#                     InlineKeyboardButton(
-#                         "📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨", url='https://t.me/+Cuh0VD290xBmODY1'
-#                     )
-#                 ]
-#             ]
-#         ),
-#         )
+@Client.on_message(filters.private & filters.text & filters.incoming)
+async def pm_search(client, message):
+    user_id = message.from_user.id
+    if str(message.text).startswith('/'):
+        return 
+    link , ispm = await db.get_set_grp_links(index=0)
+    has_premium_access = await db.has_premium_access(user_id)
+    if has_premium_access or ispm:
+        if 'hindi' in message.text.lower() or 'tamil' in message.text.lower() or 'telugu' in message.text.lower() or 'malayalam' in message.text.lower() or 'kannada' in message.text.lower() or 'english' in message.text.lower() or 'gujarati' in message.text.lower(): 
+            return await auto_filter(client, message , pm_mode=True)
+        await auto_filter(client, message , pm_mode=True)
+    else:
+        await message.reply_text(
+        text=f"<b>Hey, {message.from_user.mention} you are not a premium user, so you can't search for movies in PM.</b>",
+        reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton('Buy Premium', callback_data='seeplans')],
+                [InlineKeyboardButton("📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨", url=link)]
+            ]))
+        await client.send_message(
+            chat_id=LOG_CHANNEL,
+            text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {message.from_user.mention}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
+        )
 # @Client.on_message(filters.private & filters.text & filters.incoming)
 # async def pm_search(client, message):
 #         user_id = message.from_user.id
@@ -61,36 +61,36 @@ CAP = {}
 #              reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Buy Premium', callback_data='plans')], [InlineKeyboardButton('Join Group To Search', url='https://t.me/+Cuh0VD290xBmODY1')]]))
 #     except Exception as e:
 #         await client.send_message(LOG_CHANNEL, f"Error in `pm_search`: {str(e)}")
-@Client.on_message(filters.private & filters.text & filters.incoming)
-async def pm_search(client, message):
-    user_id = message.from_user.id
-    user = message.from_user.username
-    if str(message.text).startswith('/') or message.text.startswith("#"):
-        return  # Ignore commands
+# @Client.on_message(filters.private & filters.text & filters.incoming)
+# async def pm_search(client, message):
+#     user_id = message.from_user.id
+#     user = message.from_user.username
+#     if str(message.text).startswith('/') or message.text.startswith("#"):
+#         return  # Ignore commands
 
-    try:
-        has_premium_access = await db.has_premium_access(user_id)
-        if has_premium_access or IS_PM_SEARCH:
-            languages = ['hindi', 'tamil', 'telugu', 'malayalam', 'kannada', 'english', 'gujarati']
-            if any(lang in message.text.lower() for lang in languages):
-                return await auto_filter(client, message, pm_mode=True)
-            return await auto_filter(client, message, pm_mode=True)
+#     try:
+#         has_premium_access = await db.has_premium_access(user_id)
+#         if has_premium_access or IS_PM_SEARCH:
+#             languages = ['hindi', 'tamil', 'telugu', 'malayalam', 'kannada', 'english', 'gujarati']
+#             if any(lang in message.text.lower() for lang in languages):
+#                 return await auto_filter(client, message, pm_mode=True)
+#             return await auto_filter(client, message, pm_mode=True)
 
-        #MOVIE_GROUP_LINK = "https://t.me/+JdRUqgm9Xvk3MWJl"
-        await message.reply_text(
-            text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton('Buy Premium', callback_data='seeplans')],
-                [InlineKeyboardButton('📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨', url='https://t.me/+JdRUqgm9Xvk3MWJl')]
-            ])
-        )
-        await client.send_message(
-            chat_id=LOG_CHANNEL,
-            text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
-        )
+#         #MOVIE_GROUP_LINK = "https://t.me/+JdRUqgm9Xvk3MWJl"
+#         await message.reply_text(
+#             text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
+#             reply_markup=InlineKeyboardMarkup([
+#                 [InlineKeyboardButton('Buy Premium', callback_data='seeplans')],
+#                 [InlineKeyboardButton('📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨', url='https://t.me/+JdRUqgm9Xvk3MWJl')]
+#             ])
+#         )
+#         await client.send_message(
+#             chat_id=LOG_CHANNEL,
+#             text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
+#         )
 
-    except Exception as e:
-        await client.send_message(LOG_CHANNEL, f"Error in pm_search: {str(e)}")
+#     except Exception as e:
+#         await client.send_message(LOG_CHANNEL, f"Error in pm_search: {str(e)}")
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def group_search(client, message):
