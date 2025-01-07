@@ -967,9 +967,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ],[
             InlineKeyboardButton('❌ ᴄʟᴏꜱᴇ ❌', callback_data='close_data')
         ]]
-        reply_markup = InlineKeyboardMarkup(btn)
+	reply_markup = InlineKeyboardMarkup(btn)
         await query.message.reply_photo(
-            photo="https://envs.sh/o5c.jpg",
+	    photo="https://envs.sh/o5c.jpg",
             caption=script.PREPLANS_TXT.format(query.from_user.mention),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
