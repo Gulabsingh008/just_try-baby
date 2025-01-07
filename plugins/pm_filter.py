@@ -43,11 +43,30 @@ CAP = {}
 #             ]
 #         ),
 #         )
+# @Client.on_message(filters.private & filters.text & filters.incoming)
+# async def pm_search(client, message):
+#         user_id = message.from_user.id
+#     if str(message.text).startswith('/') or content.startswith("#"):
+#         return  # Ignore commands
+#     try:
+#         has_premium_access = await db.has_premium_access(user_id)
+#         if has_premium_access or IS_PM_SEARCH:
+#             languages = ['hindi', 'tamil', 'telugu', 'malayalam', 'kannada', 'english', 'gujarati']
+#             if any(lang in message.text.lower() for lang in languages):
+#                 return await auto_filter(client, message, pm_mode=True)
+#             return await auto_filter(client, message, pm_mode=True)
+#         MOVIE_GROUP_LINK = "https://t.me/+Cuh0VD290xBmODY1"
+#         await message.reply_text(
+#              text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
+#              reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Buy Premium', callback_data='plans')], [InlineKeyboardButton('Join Group To Search', url='https://t.me/+Cuh0VD290xBmODY1')]]))
+#     except Exception as e:
+#         await client.send_message(LOG_CHANNEL, f"Error in `pm_search`: {str(e)}")
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
-        user_id = message.from_user.id
-    if str(message.text).startswith('/') or content.startswith("#"):
+    user_id = (link unavailable)
+    if str(message.text).startswith('/') or message.text.startswith("#"):
         return  # Ignore commands
+
     try:
         has_premium_access = await db.has_premium_access(user_id)
         if has_premium_access or IS_PM_SEARCH:
@@ -55,12 +74,19 @@ async def pm_search(client, message):
             if any(lang in message.text.lower() for lang in languages):
                 return await auto_filter(client, message, pm_mode=True)
             return await auto_filter(client, message, pm_mode=True)
-        MOVIE_GROUP_LINK = "https://t.me/+Cuh0VD290xBmODY1"
+
+        MOVIE_GROUP_LINK = "(link unavailable)"
         await message.reply_text(
-             text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
-             reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Buy Premium', callback_data='plans')], [InlineKeyboardButton('Join Group To Search', url='https://t.me/+Cuh0VD290xBmODY1')]]))
+            text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton('Buy Premium', callback_data='plans')],
+                [InlineKeyboardButton('Join Group To Search', url='(link unavailable)')]
+            ])
+        )
+
     except Exception as e:
-        await client.send_message(LOG_CHANNEL, f"Error in `pm_search`: {str(e)}")
+        await client.send_message(LOG_CHANNEL, f"Error in pm_search: {str(e)}")
+
 	    
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def group_search(client, message):
