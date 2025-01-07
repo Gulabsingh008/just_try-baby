@@ -962,14 +962,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
             parse_mode=enums.ParseMode.HTML
 	)
     elif query.data == "seeplans":
-	    buttons = [[
-            InlineKeyboardButton('📲 ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ', user_id=int(7170452349))
-        ],[
-            InlineKeyboardButton('❌ ᴄʟᴏꜱᴇ ❌', callback_data='close_data')
-        ]]
-	reply_markup = InlineKeyboardMarkup(btn)
+        buttons = [[
+                InlineKeyboardButton('📲 ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ', user_id=int(7170452349))
+            ],[
+                InlineKeyboardButton('❌ ᴄʟᴏꜱᴇ ❌', callback_data='close_data')
+            ]]
+        reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.reply_photo(
-	    photo="https://envs.sh/o5c.jpg",
+            photo="https://envs.sh/o5c.jpg",
             caption=script.PREPLANS_TXT.format(query.from_user.mention),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
