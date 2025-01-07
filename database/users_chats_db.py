@@ -1,7 +1,7 @@
 import datetime
 import pytz
 from motor.motor_asyncio import AsyncIOMotorClient
-from info import SETTINGS, PREMIUM_POINT,REF_PREMIUM,DATABASE_NAME, DATABASE_URI,DEFAULT_POST_MODE
+from info import SETTINGS, PREMIUM_POINT,REF_PREMIUM,DATABASE_NAME, DATABASE_URI,DEFAULT_POST_MODE, MOVIE_GROUP_LINK
 # from utils import get_seconds
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
@@ -282,9 +282,9 @@ class Database:
                         return myLinks.get("links")[1]
                 else:
                     if index == 0:
-                        return "https://t.me/bisal_files" , False
+                        return MOVIE_GROUP_LINK , False
                     else :
-                        return "https://t.me/bisal_files"
+                        return MOVIE_GROUP_LINK
         except Exception as e:
             print(f"got err in db set : {e}")
     async def set_stream_link(self,link):
