@@ -37,7 +37,7 @@ async def pm_search(client, message):
         text=f"<b>Hey, {message.from_user.mention} you are not a premium user, so you can't search for movies in PM.</b>",
         reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton('Buy Premium', callback_data='seeplans')],
-                [InlineKeyboardButton("📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨", url=link)]
+                [InlineKeyboardButton("📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨", url='https://t.me/+JdRUqgm9Xvk3MWJl')]
             ]))
         await client.send_message(
             chat_id=LOG_CHANNEL,
