@@ -76,12 +76,12 @@ async def pm_search(client, message):
                 return await auto_filter(client, message, pm_mode=True)
             return await auto_filter(client, message, pm_mode=True)
 
-        MOVIE_GROUP_LINK = "(link unavailable)"
+        #MOVIE_GROUP_LINK = "https://t.me/+JdRUqgm9Xvk3MWJl"
         await message.reply_text(
             text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton('Buy Premium', callback_data='plans')],
-                [InlineKeyboardButton('Join Group To Search', url='(link unavailable)')]
+                [InlineKeyboardButton('Join Group To Search', url='https://t.me/+JdRUqgm9Xvk3MWJl')]
             ])
         )
 
