@@ -63,7 +63,7 @@ CAP = {}
 #         await client.send_message(LOG_CHANNEL, f"Error in `pm_search`: {str(e)}")
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
-    user_id = (link unavailable)
+    user_id = message.from_user.id
     if str(message.text).startswith('/') or message.text.startswith("#"):
         return  # Ignore commands
 
