@@ -80,9 +80,13 @@ async def pm_search(client, message):
         await message.reply_text(
             text=f"<b>Hey, {user} you are not a premium user, so you can't search for movies in PM.</b>",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton('Buy Premium', callback_data='plans')],
-                [InlineKeyboardButton('Join Group To Search', url='https://t.me/+JdRUqgm9Xvk3MWJl')]
+                [InlineKeyboardButton('Buy Premium', callback_data='seeplans')],
+                [InlineKeyboardButton('📝 ᴍᴏᴠɪᴇ ꜱᴇᴀʀᴄʜ ɢʀᴏᴜᴘ✨', url='https://t.me/+JdRUqgm9Xvk3MWJl')]
             ])
+        )
+    await client.send_message(
+        chat_id=LOG_CHANNEL,
+        text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {message.text}</b>", reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('close 🔒', callback_data='close_data')]])
         )
 
     except Exception as e:
@@ -957,7 +961,19 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
 	)
-  
+  elif query.data == "seeplans":
+        btn = [[
+            InlineKeyboardButton('📲 ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ', user_id=int(7170452349))
+        ],[
+            InlineKeyboardButton('❌ ᴄʟᴏꜱᴇ ❌', callback_data='close_data')
+        ]]
+        reply_markup = InlineKeyboardMarkup(btn)
+        await query.message.reply_photo(
+            photo="https://envs.sh/o5c.jpg",
+            caption=script.PREPLANS_TXT.format(query.from_user.mention),
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+        )
 
     elif query.data == "all_files_delete":
         files = await Media.count_documents()
