@@ -32,6 +32,9 @@ Flask
 itsdangerous==2.0.1
 python-Levenshtein
 edge-tts
+pyrogram
+beautifulsoup4
+requests
 
 #jisshu 
 opencv-python-headless==4.7.0.68  
