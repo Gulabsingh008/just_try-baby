@@ -33,7 +33,6 @@ async def get_files_db_size():
 async def save_file(media):
     """Save file in database"""
 
-    # TODO: Find better way to get same file_id for same media to avoid duplicates
     file_id, file_ref = unpack_new_file_id(media.file_id)
     file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
     try:
@@ -58,6 +57,13 @@ async def save_file(media):
         else:
             print(f'{getattr(media, "file_name", "NO_FILE")} is saved to database')
             return 'suc'
+
+async def get_file_by_name(file_name):
+    file_name = file_name.strip()
+    filter = {'file_name': {'$regex': file_name, '$options': 'i'}}
+    cursor = Media.find(filter)
+    file = await cursor.to_list(length=1)
+    return file[0] if file else None
 
 async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
     query = query.strip()
@@ -147,4 +153,3 @@ def unpack_new_file_id(new_file_id):
     )
     file_ref = encode_file_ref(decoded.file_reference)
     return file_id, file_ref
-    
