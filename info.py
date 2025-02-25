@@ -62,6 +62,8 @@ REQUEST_CHANNEL = int(request_channel) if request_channel and id_pattern.search(
 UPI_PAY_LOGS = int(environ.get('UPI_PAY_LOGS', '-1008000054678'))
 MOVIE_UPDATE_CHANNEL = int(environ.get('MOVIE_UPDATE_CHANNEL', False))
 PREMIUM_USERS = (1114789110)  # अगर पहले से नहीं है तो इसे जोड़ें
+SAVE_FILES = True  # या फिर [] या {} के रूप में डाटा ऐड करें
+
 
 CHAT_ID = [int(app_chat_id) if id_pattern.search(app_chat_id) else app_chat_id for app_chat_id in environ.get('CHAT_ID', '').split()]
 TEXT = environ.get("APPROVED_WELCOME_TEXT", "<b>{mention},\n\nʏᴏᴜʀ ʀᴇǫᴜᴇsᴛ ᴛᴏ ᴊᴏɪɴ {title} ɪs ᴀᴘᴘʀᴏᴠᴇᴅ.\n\‣ ᴘᴏᴡᴇʀᴇᴅ ʙʏ @AF_Mhakal</b>")
