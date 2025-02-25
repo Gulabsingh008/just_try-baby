@@ -37,6 +37,35 @@ class UserDownload(Document):
     class Meta:
         collection_name = "user_downloads"
 
+async def save_file(media):
+    """Save file in database"""
+
+    file_id, file_ref = unpack_new_file_id(media.file_id)
+    file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
+    try:
+        file = Media(
+            file_id=file_id,
+            file_ref=file_ref,
+            file_name=file_name,
+            file_size=media.file_size,
+            mime_type=media.mime_type,
+            caption=media.caption.html if media.caption else None,
+            file_type=media.mime_type.split('/')[0]
+        )
+    except ValidationError:
+        print('Error occurred while saving file in database')
+        return 'err'
+    else:
+        try:
+            await file.commit()
+        except DuplicateKeyError:      
+            print(f'{getattr(media, "file_name", "NO_FILE")} is already saved in database') 
+            return 'dup'
+        else:
+            print(f'{getattr(media, "file_name", "NO_FILE")} is saved to database')
+            return 'suc'
+
+
 async def get_files_db_size():
     return (await mydb.command("dbstats"))['dataSize']
 
