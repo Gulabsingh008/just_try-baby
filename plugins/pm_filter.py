@@ -5,7 +5,7 @@ import math
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 import pyrogram
-from info import SETTINGS, STICKERS_IDS,PREMIUM_POINT,MAX_BTN, IS_PM_SEARCH, LOG_CHANNEL, BIN_CHANNEL, USERNAME, URL, ADMINS, LANGUAGES,QUALITIES,YEARS,SEASONS, AUTH_CHANNEL, SUPPORT_GROUP, IMDB, IMDB_TEMPLATE, LOG_VR_CHANNEL, TUTORIAL, FILE_CAPTION, SHORTENER_WEBSITE, SHORTENER_API, SHORTENER_WEBSITE2, SHORTENER_API2, DELETE_TIME
+from info import SETTINGS, STICKERS_IDS, PREMIUM_USERS, PREMIUM_POINT, MAX_BTN, IS_PM_SEARCH, LOG_CHANNEL, BIN_CHANNEL, USERNAME, URL, ADMINS, LANGUAGES, QUALITIES, YEARS, SEASONS, AUTH_CHANNEL, SUPPORT_GROUP, IMDB, IMDB_TEMPLATE, LOG_VR_CHANNEL, TUTORIAL, FILE_CAPTION, SHORTENER_WEBSITE, SHORTENER_API, SHORTENER_WEBSITE2, SHORTENER_API2, CUSTOM_FILE_CAPTION, SAVE_FILES
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto, ChatPermissions
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid, ChatAdminRequired
@@ -21,8 +21,9 @@ BUTTONS = {}
 FILES_ID = {}
 CAP = {}
 
-
-from database.ia_filterdb import get_file_by_name  # अपडेटेड फंक्शन
+from info import SETTINGS, STICKERS_IDS, PREMIUM_USERS, PREMIUM_POINT, MAX_BTN, IS_PM_SEARCH, LOG_CHANNEL, BIN_CHANNEL, USERNAME, URL, ADMINS, LANGUAGES, QUALITIES, YEARS, SEASONS, AUTH_CHANNEL, SUPPORT_GROUP, IMDB, IMDB_TEMPLATE, LOG_VR_CHANNEL, TUTORIAL, FILE_CAPTION, SHORTENER_WEBSITE, SHORTENER_API, SHORTENER_WEBSITE2, SHORTENER_API2, CUSTOM_FILE_CAPTION, SAVE_FILES
+from database.ia_filterdb import get_file_by_name, check_download_limit, increment_download_count
+from pyrogram import Client, filters
 
 # बॉट केवल PM में काम करे, ग्रुप में नहीं
 @Client.on_message(filters.group & filters.text)
@@ -30,20 +31,27 @@ def block_in_groups(client, message):
     message.reply_text("माफ करें, यह बॉट केवल प्राइवेट चैट (PM) में काम करता है।")
 
 @Client.on_message(filters.private & filters.text)
-def send_file(client, message):
+async def send_file(client, message):
+    user_id = message.from_user.id
     query = message.text.strip()
-    file_path = get_file_by_name(query)  # सीधा फाइल का नाम सर्च करो
+    file_path = await get_file_by_name(query)  # सीधा फाइल का नाम सर्च करो
     
-    if file_path:
-        client.send_document(message.chat.id, file_path)  # सीधा फाइल भेजो
-    else:
-        message.reply_text("माफ करें, यह फाइल उपलब्ध नहीं है।")
+    if not file_path:
+        await message.reply_text("माफ करें, यह फाइल उपलब्ध नहीं है।")
+        return
+    
+    can_download, max_limit = await check_download_limit(user_id)
+    if not can_download:
+        await message.reply_text(f"आपकी डेली लिमिट खत्म हो गई है। (सीमा: {max_limit} फाइल्स/दिन)")
+        return
+    
+    await increment_download_count(user_id)  # डाउनलोड काउंट बढ़ाएं
+    await client.send_document(message.chat.id, file_path)  # सीधा फाइल भेजो
 
 # आपका पूरा पुराना कोड नीचे वैसे ही रहेगा
 # --------------------------------------
 # (यहां pm_filter.py का पूरा मौजूदा कोड शामिल किया जाएगा)
 # --------------------------------------
-
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
