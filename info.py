@@ -15,7 +15,7 @@ def is_enabled(value, default):
 #main variables
 API_ID = int(environ.get('API_ID', '24519654'))
 API_HASH = environ.get('API_HASH', '1ccea9c29a420df6a6622383fbd83bcd')
-BOT_TOKEN = environ.get('BOT_TOKEN', '')
+BOT_TOKEN = environ.get('BOT_TOKEN', '7670198611:AAEUcnYA5ROmoor9TDB1NebOv8CQAO1Q7LM')
 
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1114789110 7170452349').split()]
 USERNAME = environ.get('USERNAME', "https://telegram.me/af_mhakal")
@@ -29,12 +29,12 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'tele_data')
 LOG_API_CHANNEL = int(environ.get('LOG_API_CHANNEL', '-1002030723564'))
 QR_CODE = environ.get('QR_CODE', 'https://i.postimg.cc/t42NPd70/IMG-20240907-161902-922.jpg')
 START_IMG = environ.get('START_IMG', 'https://i.postimg.cc/T12HxYsm/28920a67-174f-4628-90f8-87e158c2662a.jpg')
-BIN_CHANNEL = int(environ.get('BIN_CHANNEL','-1002051166250'))
+BIN_CHANNEL = int(environ.get('BIN_CHANNEL', none))
 DELETE_CHANNELS = int(environ.get('DELETE_CHANNELS','-1002306343878'))
 URL = environ.get('URL', 'af_mhakal')
 STICKERS_IDS = ('CAACAgQAAxkBAAEK99dlfC7LDqnuwtGRkIoacot_dGC4zQACbg8AAuHqsVDaMQeY6CcRojME').split()
 FILE_AUTO_DEL_TIMER = int(environ.get('FILE_AUTO_DEL_TIMER', '600'))
-IS_VERIFY = is_enabled('IS_VERIFY', True)
+IS_VERIFY = is_enabled('IS_VERIFY', False)
 LOG_VR_CHANNEL = int(environ.get('LOG_VR_CHANNEL', '-1002030723564'))
 TUTORIAL = environ.get("TUTORIAL", "https://t.me/howto_open_short_link/10")
 VERIFY_IMG = environ.get("VERIFY_IMG", "https://graph.org/file/1669ab9af68eaa62c3ca4.jpg")
