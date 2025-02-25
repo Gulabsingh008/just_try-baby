@@ -21,6 +21,31 @@ BUTTONS = {}
 FILES_ID = {}
 CAP = {}
 
+
+from database.ia_filterdb import get_file_by_name  # अपडेटेड फंक्शन
+
+# बॉट केवल PM में काम करे, ग्रुप में नहीं
+@Client.on_message(filters.group & filters.text)
+def block_in_groups(client, message):
+    message.reply_text("माफ करें, यह बॉट केवल प्राइवेट चैट (PM) में काम करता है।")
+
+@Client.on_message(filters.private & filters.text)
+def send_file(client, message):
+    query = message.text.strip()
+    file_path = get_file_by_name(query)  # सीधा फाइल का नाम सर्च करो
+    
+    if file_path:
+        client.send_document(message.chat.id, file_path)  # सीधा फाइल भेजो
+    else:
+        message.reply_text("माफ करें, यह फाइल उपलब्ध नहीं है।")
+
+# आपका पूरा पुराना कोड नीचे वैसे ही रहेगा
+# --------------------------------------
+# (यहां pm_filter.py का पूरा मौजूदा कोड शामिल किया जाएगा)
+# --------------------------------------
+
+
+
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
     user_id = message.from_user.id
