@@ -117,6 +117,39 @@ async def get_file_details(query):
     filedetails = await cursor.to_list(length=1)
     return filedetails
 
+async def check_download_limit(user_id):
+    user = await UserDownload.find_one({'_id': user_id})
+    is_premium = user_id in PREMIUM_USERS
+    max_limit = 15 if is_premium else 3
+    
+    if user:
+        if datetime.utcnow() - user.last_reset >= timedelta(days=1):
+            user.file_count = 0
+            user.last_reset = datetime.utcnow()
+            await user.commit()
+        if user.file_count >= max_limit:
+            return False, max_limit  # Limit reached
+    else:
+        user = UserDownload(_id=user_id, file_count=0)
+        await user.commit()
+    return True, max_limit
+
+async def increment_download_count(user_id):
+    user = await UserDownload.find_one({'_id': user_id})
+    if user:
+        user.file_count += 1
+        await user.commit()
+    else:
+        user = UserDownload(_id=user_id, file_count=1)
+        await user.commit()
+
+async def get_file_by_name(file_name):
+    file_name = file_name.strip()
+    filter = {'file_name': {'$regex': file_name, '$options': 'i'}}
+    cursor = Media.find(filter)
+    file = await cursor.to_list(length=1)
+    return file[0] if file else None
+    
 def encode_file_id(s: bytes) -> str:
     r = b""
     n = 0
