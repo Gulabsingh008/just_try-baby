@@ -10,20 +10,32 @@ from marshmallow.exceptions import ValidationError
 from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, MAX_BTN, PREMIUM_USERS
 from database.models import UserDownload
 
-
 async def check_download_limit(user_id):
-    user = await UserDownload.find_one({"_id": user_id})  # 🔍 Check if user exists
+    """यूजर का डाउनलोड लिमिट चेक और अपडेट करने के लिए फंक्शन"""
+    
+    query = {"_id": user_id}  # यूजर को MongoDB में ढूंढने के लिए
+    user = await UserDownload.find_one(query)
 
-    if user is None:
-        # अगर user database में नहीं है, तो नया add करें
-        new_user = {"_id": user_id, "file_count": 0}
-        await UserDownload.insert_one(new_user)  # ✅ सही तरीका
-        return True, 10  # Default limit
+    max_limit = 10  # ✅ डिफ़ॉल्ट मैक्स डाउनलोड लिमिट (इसे जरूरत के अनुसार बदल सकते हैं)
 
-    # 🔹 Update file_count by incrementing it
-    await UserDownload.update_one({"_id": user_id}, {"$inc": {"file_count": 1}})  # ✅ सही तरीका
+    if user:
+        file_count = user.get("file_count", 0)
 
-    return True, 10  # पहले से मौजूद user के लिए
+        if file_count >= max_limit:
+            return False, max_limit  # ❌ लिमिट पूरी हो गई, डाउनलोड नहीं कर सकता
+
+        # ✅ अगर लिमिट पूरी नहीं हुई, तो file_count को 1 बढ़ाएं
+        new_data = {"file_count": file_count + 1}
+        await UserDownload.update_one(query, new_data)
+        return True, max_limit
+
+    else:
+        # ✅ नया यूजर, डेटा सेव करें
+        new_user = UserDownload(_id=user_id, file_count=1)
+        await new_user.save()
+        return True, max_limit
+
+    
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
 instance = Instance.from_db(mydb)
