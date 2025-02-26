@@ -1,5 +1,26 @@
 from pymongo import MongoClient
 from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME  # ⬅ info.py से Import किया
+from motor.motor_asyncio import AsyncIOMotorClient  # ✅ Motor for Async MongoDB
+
+try:
+    client = AsyncIOMotorClient(DATABASE_URI)
+    db = client[DATABASE_NAME]
+    print("✅ MongoDB Connection Successful!")  # Check if connection is established
+except Exception as e:
+    print(f"❌ MongoDB Connection Failed: {e}")
+    db = None
+
+# ✅ UserDownload Model बनाएं
+class UserDownload:
+    collection = db[COLLECTION_NAME] if db else None  # 🛑 Handle None Case
+
+    @staticmethod
+    async def find_one(query):
+        if UserDownload.collection is None:
+            print("❌ Error: Collection is None!")
+            return None
+        return await UserDownload.collection.find_one(query)
+    
 
 # ✅ MongoDB से कनेक्ट करें
 client = MongoClient(DATABASE_URI)
