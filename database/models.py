@@ -12,9 +12,10 @@ db = client[DATABASE_NAME] if client is not None else None
 class UserDownload:
     collection = db[COLLECTION_NAME] if db is not None else None
 
-    def __init__(self, _id, file_count=0):
+    def __init__(self, _id, file_count=0, last_reset=None):
         self._id = _id
         self.file_count = file_count
+        self.last_reset = last_reset  # ✅ नया फ़ील्ड
 
     async def save(self):
         """नए यूजर को डेटाबेस में सेव करने के लिए"""
@@ -38,7 +39,7 @@ class UserDownload:
 
     @staticmethod
     async def update_one(query, new_data):
-        """यूजर का डेटा अपडेट करने के लिए (TypeError फिक्स किया गया)"""
+        """यूजर का डेटा अपडेट करने के लिए"""
         if UserDownload.collection is not None:
             return await UserDownload.collection.update_one(query, {"$set": new_data})
         return None
