@@ -23,7 +23,7 @@ async def check_download_limit(user_id):
     max_limit = 15 if is_premium else 3
 
     if user:
-        last_reset = user.get("last_reset", datetime.utcnow())  # अगर last_reset नहीं है तो current time ले लो
+        last_reset = user.get("last_reset", datetime.utcnow())  
         file_count = user.get("file_count", 0)
 
         # ✅ अगर 24 घंटे से ज्यादा हो गए तो count reset कर दो
@@ -46,7 +46,6 @@ async def check_download_limit(user_id):
         new_user = {"_id": user_id, "file_count": 1, "last_reset": datetime.utcnow()}
         await UserDownload.insert_one(new_user)
         return True, max_limit
-
 
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
