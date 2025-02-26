@@ -11,7 +11,15 @@ db = client[DATABASE_NAME] if client else None
 
 # UserDownload Model
 class UserDownload:
-    collection = db[COLLECTION_NAME] if db is not None else None
+    collection = db[COLLECTION_NAME] if db else None
+
+    def __init__(self, _id, file_count=0):
+        self._id = _id
+        self.file_count = file_count
+
+    async def save(self):
+        return await UserDownload.collection.insert_one(self.__dict__)  # ✅ Insert into MongoDB
+
 
     @staticmethod
     async def find_one(query):
