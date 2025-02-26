@@ -15,24 +15,24 @@ class UserDownload:
 
     @staticmethod
     async def find_one(query):
-        if UserDownload.collection:
+        if UserDownload.collection is not None:
             return await UserDownload.collection.find_one(query)
         return None
 
     @staticmethod
     async def insert_one(data):
-        if UserDownload.collection:
+        if UserDownload.collection is not None:
             return await UserDownload.collection.insert_one(data)
         return None
 
     @staticmethod
     async def update_one(query, new_data):
-        if UserDownload.collection:
+        if UserDownload.collection is not None:
             return await UserDownload.collection.update_one(query, {"$set": new_data})
         return None
 
     @staticmethod
     async def delete_one(query):
-        if UserDownload.collection:
+        if UserDownload.collection is not None:
             return await UserDownload.collection.delete_one(query)
         return None
