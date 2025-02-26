@@ -12,14 +12,15 @@ from database.models import UserDownload
 
 
 async def check_download_limit(user_id):
-    user = await UserDownload.find_one({'_id': user_id})
-    
-    if not user:
-        user = {"_id": user_id, "file_count": 0}  # ✅ Corrected the error
-        await UserDownload.insert_one(user)
-    
-    return True, user.get("file_count", 0)
+    user = await UserDownload.find_one({"_id": user_id})
 
+    if user is None:
+        # नया user insert करना है
+        new_user = {"_id": user_id, "file_count": 0}
+        await UserDownload.insert_one(new_user)  # ✅ सही तरीका
+        return True, 10  # Default limit
+
+    return True, 10  # पहले से मौजूद user के लिए
 
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
@@ -143,7 +144,7 @@ async def check_download_limit(user_id):
             return False, max_limit  # Limit reached
     else:
         user = UserDownload(_id=user_id, file_count=0)
-        await user.commit()
+        await user.update_one()
     return True, max_limit
 
 async def increment_download_count(user_id):
