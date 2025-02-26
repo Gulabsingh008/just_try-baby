@@ -20,6 +20,9 @@ async def check_download_limit(user_id):
         await UserDownload.insert_one(new_user)  # ✅ सही तरीका
         return True, 10  # Default limit
 
+    # Existing user का file_count update करें
+    await UserDownload.update_one({"_id": user_id}, {"$inc": {"file_count": 1}})  # ✅ सही तरीका
+
     return True, 10  # पहले से मौजूद user के लिए
 
 client = AsyncIOMotorClient(DATABASE_URI)
