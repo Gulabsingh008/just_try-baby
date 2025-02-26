@@ -11,7 +11,8 @@ db = client[DATABASE_NAME] if client else None
 
 # UserDownload Model
 class UserDownload:
-    collection = db[COLLECTION_NAME] if db else None
+    collection = db[COLLECTION_NAME] if db is not None else None  # ✅ सही तरीका
+
 
     def __init__(self, _id, file_count=0):
         self._id = _id
