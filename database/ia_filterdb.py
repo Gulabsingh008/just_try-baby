@@ -7,8 +7,7 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, MAX_BTN, PREMIUM_USERS
-from datetime import datetime, timedelta
+from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
 
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
@@ -23,23 +22,17 @@ class Media(Document):
     mime_type = fields.StrField(allow_none=True)
     caption = fields.StrField(allow_none=True)
     file_type = fields.StrField(allow_none=True)
+    upload_date = fields.DateTimeField(allow_none=True)  # New Feature: Upload Date
 
     class Meta:
         indexes = ('$file_name', )
         collection_name = COLLECTION_NAME
 
-@instance.register
-class UserDownload(Document):
-    user_id = fields.IntField(attribute='_id')
-    file_count = fields.IntField(default=0)
-    last_reset = fields.DateTimeField(default=datetime.utcnow)
+async def get_files_db_size():
+    return (await mydb.command("dbstats"))['dataSize']
     
-    class Meta:
-        collection_name = "user_downloads"
-
 async def save_file(media):
     """Save file in database"""
-
     file_id, file_ref = unpack_new_file_id(media.file_id)
     file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
     try:
@@ -50,7 +43,8 @@ async def save_file(media):
             file_size=media.file_size,
             mime_type=media.mime_type,
             caption=media.caption.html if media.caption else None,
-            file_type=media.mime_type.split('/')[0]
+            file_type=media.mime_type.split('/')[0],
+            upload_date=media.date  # Storing upload date
         )
     except ValidationError:
         print('Error occurred while saving file in database')
@@ -65,42 +59,63 @@ async def save_file(media):
             print(f'{getattr(media, "file_name", "NO_FILE")} is saved to database')
             return 'suc'
 
-
-async def get_files_db_size():
-    return (await mydb.command("dbstats"))['dataSize']
-
-async def check_download_limit(user_id):
-    user = await UserDownload.find_one({'_id': user_id})
-    is_premium = user_id in PREMIUM_USERS
-    max_limit = 15 if is_premium else 3
-    
-    if user:
-        if datetime.utcnow() - user.last_reset >= timedelta(days=1):
-            user.file_count = 0
-            user.last_reset = datetime.utcnow()
-            await user.commit()
-        if user.file_count >= max_limit:
-            return False, max_limit  # Limit reached
+async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
+    query = query.strip()
+    if not query:
+        raw_pattern = '.'
+    elif ' ' not in query:
+        raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
     else:
-        user = UserDownload(_id=user_id, file_count=0)
-        await user.commit()
-    return True, max_limit
-
-async def increment_download_count(user_id):
-    user = await UserDownload.find_one({'_id': user_id})
-    if user:
-        user.file_count += 1
-        await user.commit()
-    else:
-        user = UserDownload(_id=user_id, file_count=1)
-        await user.commit()
-
-async def get_file_by_name(file_name):
-    file_name = file_name.strip()
-    filter = {'file_name': {'$regex': file_name, '$options': 'i'}}
+        raw_pattern = query.replace(' ', r'.*[\s\.\+\-_]') 
+    try:
+        regex = re.compile(raw_pattern, flags=re.IGNORECASE)
+    except:
+        regex = query
+    filter = {'file_name': regex}
     cursor = Media.find(filter)
-    file = await cursor.to_list(length=1)
-    return file[0] if file else None
+    cursor.sort('$natural', -1)
+    if lang:
+        lang_files = [file async for file in cursor if lang in file.file_name.lower()]
+        files = lang_files[offset:][:max_results]
+        total_results = len(lang_files)
+        next_offset = offset + max_results
+        if next_offset >= total_results:
+            next_offset = ''
+        return files, next_offset, total_results
+    cursor.skip(offset).limit(max_results)
+    files = await cursor.to_list(length=max_results)
+    total_results = await Media.count_documents(filter)
+    next_offset = offset + max_results
+    if next_offset >= total_results:
+        next_offset = ''       
+    return files, next_offset, total_results
+    
+async def get_bad_files(query, file_type=None, offset=0, filter=False):
+    query = query.strip()
+    if not query:
+        raw_pattern = '.'
+    elif ' ' not in query:
+        raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
+    else:
+        raw_pattern = query.replace(' ', r'.*[\s\.\+\-_]')
+    try:
+        regex = re.compile(raw_pattern, flags=re.IGNORECASE)
+    except:
+        return []
+    filter = {'file_name': regex}
+    if file_type:
+        filter['file_type'] = file_type
+    total_results = await Media.count_documents(filter)
+    cursor = Media.find(filter)
+    cursor.sort('$natural', -1)
+    files = await cursor.to_list(length=total_results)
+    return files, total_results
+    
+async def get_file_details(query):
+    filter = {'file_id': query}
+    cursor = Media.find(filter)
+    filedetails = await cursor.to_list(length=1)
+    return filedetails
 
 def encode_file_id(s: bytes) -> str:
     r = b""
