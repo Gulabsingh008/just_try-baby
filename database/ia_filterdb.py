@@ -8,33 +8,45 @@ from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
 from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, MAX_BTN, PREMIUM_USERS
+from datetime import datetime, timedelta
 from database.models import UserDownload
+from info import PREMIUM_USERS  # प्रीमियम यूजर्स की लिस्ट
 
 async def check_download_limit(user_id):
     """यूजर का डाउनलोड लिमिट चेक और अपडेट करने के लिए फंक्शन"""
     
-    query = {"_id": user_id}  # ✅ यूजर की MongoDB में पहचान
+    query = {"_id": user_id}
     user = await UserDownload.find_one(query)
 
-    max_limit = 10  # ✅ मैक्सिमम डाउनलोड लिमिट (इसे अपनी जरूरत के अनुसार बदल सकते हैं)
+    # ✅ प्रीमियम यूजर्स को ज्यादा लिमिट दें
+    is_premium = user_id in PREMIUM_USERS
+    max_limit = 15 if is_premium else 3
 
     if user:
+        last_reset = user.get("last_reset", datetime.utcnow())  # अगर last_reset नहीं है तो current time ले लो
         file_count = user.get("file_count", 0)
 
+        # ✅ अगर 24 घंटे से ज्यादा हो गए तो count reset कर दो
+        if datetime.utcnow() - last_reset >= timedelta(days=1):
+            file_count = 0
+            last_reset = datetime.utcnow()
+
+        # ✅ अगर लिमिट पूरी हो गई तो False रिटर्न करो
         if file_count >= max_limit:
-            return False, max_limit  # ❌ लिमिट पूरी हो गई, डाउनलोड ब्लॉक
+            return False, max_limit
 
         # ✅ सही तरीके से update_one() को कॉल किया
-        new_data = {"file_count": file_count + 1}
+        new_data = {"file_count": file_count + 1, "last_reset": last_reset}
         await UserDownload.update_one(query, new_data)  # ✅ Static Method को Class से कॉल किया
 
         return True, max_limit
 
     else:
         # ✅ नया यूजर, डेटा सेव करें
-        new_user = {"_id": user_id, "file_count": 1}
+        new_user = {"_id": user_id, "file_count": 1, "last_reset": datetime.utcnow()}
         await UserDownload.insert_one(new_user)
         return True, max_limit
+
 
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
