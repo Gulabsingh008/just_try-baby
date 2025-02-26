@@ -13,28 +13,28 @@ from database.models import UserDownload
 async def check_download_limit(user_id):
     """यूजर का डाउनलोड लिमिट चेक और अपडेट करने के लिए फंक्शन"""
     
-    query = {"_id": user_id}  # यूजर को MongoDB में ढूंढने के लिए
+    query = {"_id": user_id}  # ✅ यूजर की MongoDB में पहचान
     user = await UserDownload.find_one(query)
 
-    max_limit = 10  # ✅ डिफ़ॉल्ट मैक्स डाउनलोड लिमिट (इसे जरूरत के अनुसार बदल सकते हैं)
+    max_limit = 10  # ✅ मैक्सिमम डाउनलोड लिमिट (इसे अपनी जरूरत के अनुसार बदल सकते हैं)
 
     if user:
         file_count = user.get("file_count", 0)
 
         if file_count >= max_limit:
-            return False, max_limit  # ❌ लिमिट पूरी हो गई, डाउनलोड नहीं कर सकता
+            return False, max_limit  # ❌ लिमिट पूरी हो गई, डाउनलोड ब्लॉक
 
-        # ✅ अगर लिमिट पूरी नहीं हुई, तो file_count को 1 बढ़ाएं
+        # ✅ अगर लिमिट पूरी नहीं हुई, तो `file_count` बढ़ाएं और अपडेट करें
         new_data = {"file_count": file_count + 1}
-        await UserDownload.update_one(query, new_data)
+        await UserDownload.update_one(query, new_data)  # ✅ सही `update_one()` कॉल
+
         return True, max_limit
 
     else:
         # ✅ नया यूजर, डेटा सेव करें
-        new_user = UserDownload(_id=user_id, file_count=1)
-        await new_user.save()
+        new_user = {"_id": user_id, "file_count": 1}
+        await UserDownload.insert_one(new_user)
         return True, max_limit
-
     
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
