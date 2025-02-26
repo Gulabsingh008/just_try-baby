@@ -170,7 +170,7 @@ async def check_download_limit(user_id):
             return False, max_limit  # Limit reached
     else:
         user = UserDownload(_id=user_id, file_count=0)
-        await user.update_one()
+        await UserDownload.update_one(query, {"$set": new_data})
     return True, max_limit
 
 async def increment_download_count(user_id):
