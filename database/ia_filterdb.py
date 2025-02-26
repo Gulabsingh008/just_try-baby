@@ -12,13 +12,13 @@ from database.models import UserDownload
 
 
 async def check_download_limit(user_id):
-    is_premium = user_id in PREMIUM_USERS  # ✅ Fixed NameError
     user = await UserDownload.find_one({'_id': user_id})
     
-    if user:
-        return True, user.get("max_limit", 5) if is_premium else user.get("max_limit", 2)
+    if not user:
+        user = {"_id": user_id, "file_count": 0}  # ✅ Corrected the error
+        await UserDownload.insert_one(user)
     
-    return False, 0
+    return True, user.get("file_count", 0)
 
 
 client = AsyncIOMotorClient(DATABASE_URI)
