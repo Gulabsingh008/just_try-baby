@@ -7,8 +7,18 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
+from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, MAX_BTN, PREMIUM_USERS
 from database.models import UserDownload
+
+
+async def check_download_limit(user_id):
+    is_premium = user_id in PREMIUM_USERS  # ✅ Fixed NameError
+    user = await UserDownload.find_one({'_id': user_id})
+    
+    if user:
+        return True, user.get("max_limit", 5) if is_premium else user.get("max_limit", 2)
+    
+    return False, 0
 
 
 client = AsyncIOMotorClient(DATABASE_URI)
