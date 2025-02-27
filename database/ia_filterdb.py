@@ -76,7 +76,7 @@ async def get_file_by_name(file_name):
     if file:
         return {
             "file_id": file.file_id,  
-            "file_type": getattr(file, "file_type", "document")  # ✅ `.get()` की जगह `getattr()` इस्तेमाल करें
+            "file_type": file.file_type if file.file_type else "document"  # ✅ सही फाइल टाइप सेट करें
         }
     return None
 
