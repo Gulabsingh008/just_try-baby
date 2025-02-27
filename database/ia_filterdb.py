@@ -61,12 +61,21 @@ async def save_file(media):
             return 'suc'
 
 async def get_file_by_name(file_name):
-    """MongoDB से सीधे फाइल खोजकर भेजने के लिए"""
+    """फाइल के नाम या कैप्शन से सर्च करके फाइल खोजें"""
     file_name = file_name.strip()
-    filter_query = {'file_name': {'$regex': file_name, '$options': 'i'}}
-    cursor = Media.find(filter_query)
+
+    filter = {
+        "$or": [
+            {'file_name': {'$regex': file_name, '$options': 'i'}},
+            {'caption': {'$regex': file_name, '$options': 'i'}}
+        ]
+    }
+
+    cursor = Media.find(filter)
     file = await cursor.to_list(length=1)
-    return file[0] if file else None  # पहला ही रिजल्ट भेजेगा
+    
+    return file[0] if file else None
+
 
 
 async def check_download_limit(user_id):
