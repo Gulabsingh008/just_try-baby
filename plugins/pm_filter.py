@@ -11,7 +11,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid, ChatAdminRequired
 from utils import temp, get_settings, is_check_admin, get_status, get_hash, get_size, save_group_settings, is_req_subscribed, get_poster, get_status, get_readable_time , imdb , formate_file_name
 from database.users_chats_db import db
-from database.ia_filterdb import Media, get_search_results, get_bad_files, get_file_details
+#from database.ia_filterdb import Media, get_search_results, get_bad_files, get_file_details
 import random
 lock = asyncio.Lock()
 from .components.checkFsub import is_user_fsub
@@ -32,26 +32,21 @@ async def block_in_groups(client, message):
     await message.reply_text("माफ करें, यह बॉट केवल प्राइवेट चैट (PM) में काम करता है।")
 
 
+from database.ia_filterdb import get_file_by_name
+
 @Client.on_message(filters.private & filters.text)
 async def send_file(client, message):
-    """PM में यूजर के सर्च करने पर सीधा फाइल भेजने का function"""
-
-    query = message.text.strip()  # 🔍 यूजर का सर्च Query
-    if not query:
-        await message.reply_text("❌ कृपया कोई keyword दर्ज करें!")
+    user_id = message.from_user.id
+    query = message.text.strip()
+    
+    file_path = await get_file_by_name(query)  # ✅ सीधे फाइल सर्च करें
+    
+    if not file_path:
+        await message.reply_text("⚠️ माफ करें, यह फाइल उपलब्ध नहीं है।")
         return
+    
+    await client.send_document(message.chat.id, file_path['file_id'])  # ✅ सीधे फाइल भेजें
 
-    file = await get_file_by_name(query)  # ✅ सीधा फाइल खोजो
-    if not file:
-        await message.reply_text("❌ कोई फाइल नहीं मिली!")
-        return
-
-    # ✅ फाइल भेजो
-    await client.send_document(
-        chat_id=message.chat.id,
-        document=file.file_id,
-        caption=f"📁 {file.file_name}\n📦 {file.file_size} MB"
-    )
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
