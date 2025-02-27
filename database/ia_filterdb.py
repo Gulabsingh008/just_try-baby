@@ -71,15 +71,15 @@ async def get_file_by_name(file_name):
         ]
     }
 
-    cursor = Media.find(filter)
-    file = await cursor.to_list(length=1)
+    file = await Media.find_one(filter)  # ✅ `.find_one()` से सिंगल डॉक्यूमेंट लाएं
     
     if file:
         return {
-            "file_id": file[0]["file_id"],
-            "file_type": file[0]["file_type"] if "file_type" in file[0] else "document"  # ✅ अब `.get()` नहीं, सही तरीका
+            "file_id": file.file_id,  
+            "file_type": getattr(file, "file_type", "document")  # ✅ `.get()` की जगह `getattr()` इस्तेमाल करें
         }
     return None
+
 
 
 async def check_download_limit(user_id):
