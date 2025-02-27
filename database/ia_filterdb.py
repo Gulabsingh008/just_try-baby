@@ -74,7 +74,13 @@ async def get_file_by_name(file_name):
     cursor = Media.find(filter)
     file = await cursor.to_list(length=1)
     
-    return file[0] if file else None
+    if file:
+        return {
+            "file_id": file[0]["file_id"],
+            "file_type": file[0].get("file_type", "document")  # ✅ सही फाइल टाइप सेट करें
+        }
+    return None
+
 
 
 
