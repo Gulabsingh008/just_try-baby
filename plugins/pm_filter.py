@@ -47,11 +47,11 @@ async def send_file(client, message):
     file_type = file_data["file_type"]
 
     # ✅ अब सही API कॉल होगा
-    if file_type in ["video", "mp4", "mkv", "avi"]:
+    if file_type == "video":
         await client.send_video(message.chat.id, file_id)  # 🎥 वीडियो भेजें
-    elif file_type in ["photo", "jpeg", "png"]:
+    elif file_type == "image":
         await client.send_photo(message.chat.id, file_id)  # 🖼️ इमेज भेजें
-    elif file_type in ["audio", "mp3", "wav"]:
+    elif file_type == "audio":
         await client.send_audio(message.chat.id, file_id)  # 🎵 ऑडियो भेजें
     else:
         await client.send_document(message.chat.id, file_id)  # 📂 बाकी फाइलें डॉक्यूमेंट के रूप में भेजें
