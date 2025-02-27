@@ -77,11 +77,9 @@ async def get_file_by_name(file_name):
     if file:
         return {
             "file_id": file[0]["file_id"],
-            "file_type": file[0].get("file_type", "document")  # ✅ सही फाइल टाइप सेट करें
+            "file_type": file[0]["file_type"] if "file_type" in file[0] else "document"  # ✅ अब `.get()` नहीं, सही तरीका
         }
     return None
-
-
 
 
 async def check_download_limit(user_id):
