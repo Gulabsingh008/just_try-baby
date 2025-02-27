@@ -44,7 +44,7 @@ async def send_file(client, message):
         return
     
     file_id = file_data["file_id"]
-    file_type = file_data.get("file_type", "document")  # ✅ Default "document"
+    file_type = file_data["file_type"]
 
     # ✅ फाइल टाइप के अनुसार सही API इस्तेमाल करें
     if file_type in ["video", "mp4", "mkv", "avi"]:
@@ -55,6 +55,7 @@ async def send_file(client, message):
         await client.send_audio(message.chat.id, file_id)  # 🎵 ऑडियो भेजें
     else:
         await client.send_document(message.chat.id, file_id)  # 📂 बाकी फाइलें डॉक्यूमेंट के रूप में भेजें
+
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
