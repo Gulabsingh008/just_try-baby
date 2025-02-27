@@ -18,28 +18,24 @@ class UserDownload:
 
     @staticmethod
     async def insert_one(data):
-        """🔹 नए डेटा को डेटाबेस में डालने के लिए"""
         if UserDownload.collection is not None:
             return await UserDownload.collection.insert_one(data)
         return None
 
     @staticmethod
     async def find_one(query):
-        """🔹 यूजर को डेटाबेस में सर्च करने के लिए"""
         if UserDownload.collection is not None:
             return await UserDownload.collection.find_one(query)
         return None
 
     @staticmethod
     async def update_one(query, new_data):
-        """🔹 यूजर का डेटा अपडेट करने के लिए (TypeError फिक्स किया गया)"""
         if UserDownload.collection is not None:
             return await UserDownload.collection.update_one(query, {"$set": new_data})
         return None
 
     @staticmethod
     async def delete_one(query):
-        """🔹 यूजर को डेटाबेस से हटाने के लिए"""
         if UserDownload.collection is not None:
             return await UserDownload.collection.delete_one(query)
         return None
