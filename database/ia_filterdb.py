@@ -76,7 +76,7 @@ async def get_file_by_name(file_name):
     if file:
         return {
             "file_id": file.file_id,  
-            "file_type": file.file_type if file.file_type else "document"  # ✅ सही फाइल टाइप सेट करें
+            "file_type": file.mime_type.split('/')[0] if file.mime_type else "document"  # ✅ सही फाइल टाइप सेट करें
         }
     return None
 
