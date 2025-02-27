@@ -29,10 +29,11 @@ class UserDownload:
         return None
 
     @staticmethod
-    async def update_one(query, new_data):
-        if UserDownload.collection is not None:
-            return await UserDownload.collection.update_one(query, {"$set": new_data})
-        return None
+async def update_one(query, new_data):
+    """🔹 यूजर का डेटा अपडेट करने के लिए (TypeError फिक्स किया गया)"""
+    if UserDownload.collection is not None:
+        return await UserDownload.collection.update_one(query, {"$set": new_data})
+    return None
 
     @staticmethod
     async def delete_one(query):
