@@ -76,6 +76,11 @@ async def check_download_limit(user_id):
 async def increment_download_count(user_id):
     """✅ **Download Count को अब ट्रैक करने की जरूरत नहीं**"""
     return
+async def get_file_details(query):
+    filter = {'file_id': query}
+    cursor = Media.find(filter)
+    filedetails = await cursor.to_list(length=1)
+    return filedetails
 
 def encode_file_id(s: bytes) -> str:
     r = b""
