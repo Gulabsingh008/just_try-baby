@@ -46,7 +46,7 @@ async def send_file(client, message):
     file_id = file_data["file_id"]
     file_type = file_data["file_type"]
 
-    # ✅ फाइल टाइप के अनुसार सही API इस्तेमाल करें
+    # ✅ अब सही API कॉल होगा
     if file_type in ["video", "mp4", "mkv", "avi"]:
         await client.send_video(message.chat.id, file_id)  # 🎥 वीडियो भेजें
     elif file_type in ["photo", "jpeg", "png"]:
