@@ -45,8 +45,10 @@ async def send_file(client, message):
         await message.reply_text("⚠️ माफ करें, यह फाइल उपलब्ध नहीं है।")
         return
     
-    await client.send_document(message.chat.id, file_path['file_id'])  # ✅ सीधे फाइल भेजें
-
+    if file_path["mime_type"].startswith("video/"):
+        await client.send_video(message.chat.id, file_path["file_id"])  # 🎥 वीडियो फाइल को सही तरीके से भेजें
+    else:
+        await client.send_document(message.chat.id, file_path["file_id"])  # 📄 बाकी फाइलें वैसे ही भेजें
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
