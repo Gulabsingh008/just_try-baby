@@ -37,20 +37,24 @@ from database.ia_filterdb import get_file_by_name
 @Client.on_message(filters.private & filters.text)
 async def send_file(client, message):
     query = message.text.strip()
-    file_path = await get_file_by_name(query)  # ✅ फाइल सर्च करें
+    file_data = await get_file_by_name(query)  # ✅ फाइल सर्च करें
 
-    if not file_path:
+    if not file_data:
         await message.reply_text("माफ करें, यह फाइल उपलब्ध नहीं है।")
         return
     
-    file_id = file_path["file_id"]
-    file_type = file_path.get("file_type", "document")  # ✅ Default "document"
+    file_id = file_data["file_id"]
+    file_type = file_data.get("file_type", "document")  # ✅ Default "document"
 
-    if file_type in ["video", "mp4", "mkv"]:  
+    # ✅ फाइल टाइप के अनुसार सही API इस्तेमाल करें
+    if file_type in ["video", "mp4", "mkv", "avi"]:
         await client.send_video(message.chat.id, file_id)  # 🎥 वीडियो भेजें
+    elif file_type in ["photo", "jpeg", "png"]:
+        await client.send_photo(message.chat.id, file_id)  # 🖼️ इमेज भेजें
+    elif file_type in ["audio", "mp3", "wav"]:
+        await client.send_audio(message.chat.id, file_id)  # 🎵 ऑडियो भेजें
     else:
         await client.send_document(message.chat.id, file_id)  # 📂 बाकी फाइलें डॉक्यूमेंट के रूप में भेजें
-
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
