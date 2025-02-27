@@ -13,7 +13,7 @@ from database.models import UserDownload
 from info import PREMIUM_USERS  # प्रीमियम यूजर्स की लिस्ट
 
 async def check_download_limit(user_id):
-    query = {"_id": user_id}
+    query = {"_id": user_id}  # Query to find the user
     user = await UserDownload.find_one(query)
 
     max_limit = 10  # Maximum download limit
@@ -24,14 +24,17 @@ async def check_download_limit(user_id):
         if file_count >= max_limit:
             return False, max_limit  # Limit reached
 
+        # Prepare new data to update
         new_data = {"file_count": file_count + 1}
         await UserDownload.update_one(query, new_data)  # Pass query and new_data to update_one()
         return True, max_limit
 
     else:
+        # New user, save their data
         new_user = {"_id": user_id, "file_count": 1}
         await UserDownload.insert_one(new_user)
         return True, max_limit
+        
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
 instance = Instance.from_db(mydb)
