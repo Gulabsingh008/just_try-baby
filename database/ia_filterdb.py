@@ -13,28 +13,31 @@ from database.models import UserDownload
 from info import PREMIUM_USERS  # प्रीमियम यूजर्स की लिस्ट
 
 async def check_download_limit(user_id):
-    query = {"_id": user_id}  # Query to find the user
+    """यूजर का डाउनलोड लिमिट चेक और अपडेट करने के लिए फंक्शन"""
+    
+    query = {"_id": user_id}  # ✅ यूजर की MongoDB में पहचान
     user = await UserDownload.find_one(query)
 
-    max_limit = 10  # Maximum download limit
+    max_limit = 10  # ✅ मैक्सिमम डाउनलोड लिमिट
 
     if user:
         file_count = user.get("file_count", 0)
 
         if file_count >= max_limit:
-            return False, max_limit  # Limit reached
+            return False, max_limit  # ❌ लिमिट पूरी हो गई, डाउनलोड ब्लॉक
 
-        # Prepare new data to update
+        # ✅ update_one() को सही तरीके से कॉल किया गया
         new_data = {"file_count": file_count + 1}
-        await UserDownload.update_one(query, new_data)  # Pass query and new_data to update_one()
+        await UserDownload.update_one(query, new_data)  # ✅ Class Method से अपडेट
+
         return True, max_limit
 
     else:
-        # New user, save their data
+        # ✅ नया यूजर, डेटा सेव करें
         new_user = {"_id": user_id, "file_count": 1}
         await UserDownload.insert_one(new_user)
         return True, max_limit
-        
+
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
 instance = Instance.from_db(mydb)
